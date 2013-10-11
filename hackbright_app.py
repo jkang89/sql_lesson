@@ -36,21 +36,21 @@ def make_new_project(title, description, max_grade):
     query = """INSERT into Students values (?,?,?)"""
     DB.execute(query, (title, description, max_grade))
     CONN.commit()
-    print "Successfully added title: %s" % title
+    print "Successfully added project, %s, which was to: %s, and is worth %s points." % (title, description, max_grade)
 
 def get_grade_by_project(project_title):
-    query = """SELECT first_name, last_name, project_title, grade, max_grade FROM Grades where project_title = ?"""
+    query = """SELECT student_github, project_title, grade  FROM Grades where project_title = ?"""
     DB.execute(query, (project_title,))
     row = DB.fetchone()
     print """\
     Project_title: %s
-    Grade: %d""" %(row[2], row[3])
+    Grade: %s""" %(row[2], row[3])
 
-def make_new_grade(first_name, last_name, grade):
+def make_new_grade(student_github, project_title, grade):
     query = """INSERT into Grades values (?,?,?)"""
-    DB.execute(query, (first_name, last_name, grade))
+    DB.execute(query, (student_github, project_title, grade))
     CONN.commit()
-    print "Successfully updated %s %s's grade: %s" %(first_name, last_name, grade)
+    print "Successfully updated %s's %s grade to %s." %(student_github, project_title, grade)
 
 
 def main():
@@ -58,7 +58,10 @@ def main():
     command = None
     while command != "quit":
         input_string = raw_input("HBA Database> ")
-        tokens = input_string.split()
+        if command == "new_student" or command == "new_grade":
+            tokens = input_string.split()
+        elif command == "new_project":
+            tokens = input_string.split(", ")
         command = tokens[0]
         args = tokens[1:]
 
